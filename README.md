@@ -1,2 +1,2 @@
-# Qiz
+# Quiz
 JavaScript base quiz
