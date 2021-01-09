@@ -99,8 +99,6 @@ var answerTxt = document.createElement("h2");
 answerTxt.innerHTML = " ";
 answerDisplay.appendChild(answerTxt);
 
-
-
 // questions
 var questions = [
     {question:"Commonly used data types DO NOT Include:",
@@ -136,6 +134,7 @@ var questions = [
 ];
 
 // score tracker
+var finalScore = 0;
 var score = [
     {first:"name",highScore:"score"},
     {second:"name", highScore:"score"},
@@ -146,7 +145,7 @@ var score = [
 var questionKey = ['A','B','C','D'];
 var x = "";
 var z = 0;
-var  quizEnd = false;
+var quizEnd = false;
 
 // create buttons with question options
 var creatButtons = function (index) {
@@ -173,10 +172,9 @@ var creatQuestion = function (index) {
         gdisplayh2.innerHTML = questionIndex;
         creatButtons(index);
     }
-    else{
+    else if (!quizEnd){
        endQuiz("Nice!");
     }
-    
 }
 // quiz timer
 var quizTimer = function (time) {
@@ -187,7 +185,7 @@ var quizTimer = function (time) {
    
     var scoreTimer = setInterval(function(){
         if(time === 0){
-            endQuiz("Time UP");
+            endQuiz("Time UP!");
             clearInterval(scoreTimer);
         }
         else if (!quizEnd){
@@ -229,27 +227,25 @@ var checkAnswer = function (event) {
      if (quizCheck[z].answer === quizAnswer.value){
         window.z++;
         incrementPoints();
-
         // paus for 3 secounds
         var correctTimer = setInterval(function(){
-            clearOptions("btn");
-            creatQuestion(z)
-            listener(checkAnswer,".btn");
             displayRightAnswer(quickTime);
-
-            quickTime--
-
+            quickTime--;
+            
             //reset quick time
             if(quickTime===0){
                 clearInterval(correctTimer);
                 quickTime = 3;
-               // addTime(4);
             }
         },300);
-        
-     }
-     
-     else{
+        //continue after 3 seconds
+        if (quickTime===3) {
+            // addTime(4);
+            clearOptions("btn");
+            creatQuestion(z)
+            listener(checkAnswer,".btn");
+        }
+     }else{
         displayWorngAnswer(quickTime);
         decrementPoints();
          //deductTime(1);
@@ -264,7 +260,6 @@ var displayRightAnswer = function(timer) {
     else{
         answerTxt.innerText = "right";
     }
-   
 }
 
 // let the player know the answer was wrong
@@ -275,7 +270,6 @@ var displayWorngAnswer = function(timer) {
     else{
         answerTxt.innerText = "wrong";
     }
-   
 }
 
 // add time to current time
@@ -308,16 +302,53 @@ var startQuiz = function() {
     listener(checkAnswer,".btn");
 }
 
-var endQuiz = function(elemet){
-    var quiz__Time = document.getElementById("quiz__timer");
-    window.quizEnd = true;
-    quiz__Time.innerText = elemet;
-    gdisplayh2.innerHTML = "Coding Quiz Challenge";
+//submit high score
+var submit = function () {
 
-   if (elemet === "Time UP"){
-       clearOptions("btn")
-   }
+    var initials = document.createElement("h3");
+    initials.innerText = "Enter Initials";
+    quizDisplay.appendChild(initials);
+
+    var signUP = document.createElement("Form");
+    quizDisplay.appendChild(signUP);
+
+    var initialsInput = document.createElement("input");
+    signUP.appendChild(initialsInput);
+
+    var initialsBtn = document.createElement("button");
+    initialsBtn.id = "initSubmit";
+    initialsBtn.innerText = "Submit";
+    initialsBtn.addEventListener("click",highScore);
+    quizDisplay.appendChild(initialsBtn);
 }
+
+var highScore = function () {
+    console.log("Button was clicked");
+    //initialsBtn.remove();
+}
+
+// end game screen
+var endQuiz = function(elemet){
+    var timeUP = "All done!";
+    var inTime = "Congratulations!";
+    var quiz__Time = document.getElementById("quiz__timer");
+
+    // set end quiz status
+    window.quizEnd = true;
+    if(elemet=== "Nice!"){
+        quiz__Time.innerText = elemet;
+        gdisplayh2.innerHTML = inTime;
+    }
+    else if (elemet === "Time UP!"){
+        quiz__Time.innerText = elemet;
+        gdisplayh2.innerHTML = timeUP;
+        clearOptions("btn");
+   }
+    pdisplay.innerHTML = "Your score is " + playerScore;
+    generalDisplay.appendChild(pdisplay);
+    submit();
+}
+
 
 function incrementPoints(){
     window.playerScore += 25;

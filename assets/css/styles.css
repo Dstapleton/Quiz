@@ -60,6 +60,7 @@ main {
     color: rgb(130, 47, 207);
 }
 .gdisplay p {
+    font-size:1.3rem;
      margin-top:10px;
      font-weight:bold;
 }
@@ -81,6 +82,25 @@ main {
     margin:5px 5px;
     border-radius:20px;
     outline:none;
+}
+.quizDisplay form input {
+    font-size:1.3rem;
+    height:30px;
+    margin:0 5px 0 5px;
+}
+.quizDisplay h3 {
+    font-size:1.5rem;
+    color: rgb(115, 16, 172);
+    margin:0 0 10px 0;
+}
+.quizDisplay button {
+    height:50px;
+    width:400px;
+    font-size: 1.1rem;
+    color: antiquewhite;
+    background-color: rgb(90, 19, 153);
+    border-radius:5px;
+    margin:10px 0 10px 0;
 }
 
 /* footer content */
