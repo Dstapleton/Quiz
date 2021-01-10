@@ -94,13 +94,14 @@ main {
     margin:0 0 10px 0;
 }
 .quizDisplay button {
-    height:50px;
-    width:400px;
+    height:80px;
+    width:40rem;
     font-size: 1.1rem;
     color: antiquewhite;
-    background-color: rgb(90, 19, 153);
-    border-radius:5px;
+    background-color: rgb(79, 44, 109);
+    border-radius:10px;
     margin:10px 0 10px 0;
+    outline:none;
 }
 
 /* footer content */
