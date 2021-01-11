@@ -22,7 +22,7 @@ body.appendChild(footer);
 
 //contain high score element
 var highScoreDiv = document.createElement("div");
-highScoreDiv.className = "hdisplay";
+highScoreDiv.className = "hdisplay viewscore";
 header.appendChild(highScoreDiv);
 
 //timer div
@@ -47,7 +47,6 @@ timerTxt.innerHTML = "Time:" + " " + 0;
 timerDiv.appendChild(timerTxt);
 
 // current score
-var playerScore = 0;
 var currentScore = document.createElement("h1");
 currentScore.id = "scoreHud";
 currentScore.innerHTML = "Score:" + " " + 0;
@@ -83,6 +82,7 @@ section1.appendChild(quizDisplay);
 
 // quiz button
 var quizButton = document.createElement("button");
+quizButton.id = "sbtn";
 quizButton.className = "quizBtn";
 quizButton.innerText = "Start Quiz";
 quizDisplay.appendChild(quizButton);
@@ -96,6 +96,7 @@ footer.appendChild(answerDisplay);
 
 // display text wrong or right using active
 var answerTxt = document.createElement("h2");
+answerTxt.id = "ansTxt";
 answerTxt.innerHTML = " ";
 answerDisplay.appendChild(answerTxt);
 
@@ -134,18 +135,15 @@ var questions = [
 ];
 
 // score tracker
-var finalScore = 0;
-var score = [
-    {first:"name",highScore:"score"},
-    {second:"name", highScore:"score"},
-    {third:"name", highScore:"score"}
-];
+var score = {name:"John",highScore:120};
 
 //question options
+var currentPLayer = "";
 var questionKey = ['A','B','C','D'];
 var x = "";
 var z = 0;
 var quizEnd = false;
+var playerScore = 0;
 
 // create buttons with question options
 var creatButtons = function (index) {
@@ -167,6 +165,7 @@ var creatButtons = function (index) {
 var creatQuestion = function (index) {
     // if the index value not equal the number of questions prociede
     //else end quiz
+    
     if(index !== questions.length){
         var questionIndex = questions[index].question;
         gdisplayh2.innerHTML = questionIndex;
@@ -181,8 +180,8 @@ var quizTimer = function (time) {
     var min = time * 10;
     var quiz__Time = document.getElementById("quiz__timer");
     quiz__Time.innerText = "Time:" + " " + time;
+
     // set time to minuts
-   
     var scoreTimer = setInterval(function(){
         if(time === 0){
             endQuiz("Time UP!");
@@ -218,6 +217,7 @@ var quizTimer = function (time) {
  }
 
 // get player input
+
 var checkAnswer = function (event) {
     var quizAnswer = event.target;
     var quizCheck = questions;
@@ -225,27 +225,24 @@ var checkAnswer = function (event) {
     quizAnswer.disabled = "true";
     // get the indicatesd correct answer
      if (quizCheck[z].answer === quizAnswer.value){
+        //continue after 3 seconds
         window.z++;
         incrementPoints();
+
         // paus for 3 secounds
         var correctTimer = setInterval(function(){
             displayRightAnswer(quickTime);
             quickTime--;
-            
             //reset quick time
-            if(quickTime===0){
+            if(quickTime === 0){
+                clearOptions("btn");
+                creatQuestion(z)
+                listener(checkAnswer,".btn");
                 clearInterval(correctTimer);
                 quickTime = 3;
             }
         },300);
-        //continue after 3 seconds
-        if (quickTime===3) {
-            // addTime(4);
-            clearOptions("btn");
-            creatQuestion(z)
-            listener(checkAnswer,".btn");
-        }
-     }else{
+    }else{
         displayWorngAnswer(quickTime);
         decrementPoints();
          //deductTime(1);
@@ -258,7 +255,7 @@ var displayRightAnswer = function(timer) {
         answerTxt.innerText = " ";
     }
     else{
-        answerTxt.innerText = "right";
+        answerTxt.innerText = "CORRECT!";
     }
 }
 
@@ -268,7 +265,7 @@ var displayWorngAnswer = function(timer) {
         answerTxt.innerText = " ";
     }
     else{
-        answerTxt.innerText = "wrong";
+        answerTxt.innerText = "WRONG!";
     }
 }
 
@@ -288,43 +285,150 @@ var deductTime = function (amount){
 
 // quiz start-up
 var startQuiz = function() {
-    //remove intro paragraph
-    pdisplay.remove();
-    // hide start button
-    quizButton.remove();
+        highScoreDiv.removeEventListener("click", highScore);
+    if (localStorage.getItem("name") !== null) {
+        score.name = localStorage.getItem("name");
+        score.highScore = parseInt(localStorage.getItem("highScore"));
+    }
 
+    var check = document.getElementById("sbtn");
+    if (check === null){
+        document.getElementById("newQuiz").remove();
+        document.getElementById("newQuiz").remove();
+        document.getElementById("inith3").remove();
+       
+        window.z = 0;
+        window.quizEnd = false;
+        window.playerScore = 0;
+        scoreHud.innerHTML ="Score:" + " " + playerScore;
+        window.currentPLayer = "";
+    }
+    else{
+        //remove intro paragraph
+        pdisplay.remove();
+        // hide start button
+        quizButton.remove();
+    }
     // alert the player that the game is about to start
     alert("The Quiz timer will begin");
     
     // generate the first question
     creatQuestion(z);
-    quizTimer(60);
+    quizTimer(120);
     listener(checkAnswer,".btn");
+    //loadScore();
 }
 
 //submit high score
 var submit = function () {
-
     var initials = document.createElement("h3");
+    initials.id = "inith3";
     initials.innerText = "Enter Initials";
     quizDisplay.appendChild(initials);
 
-    var signUP = document.createElement("Form");
-    quizDisplay.appendChild(signUP);
-
     var initialsInput = document.createElement("input");
-    signUP.appendChild(initialsInput);
+    initialsInput.id = "player";
+    quizDisplay.appendChild(initialsInput);
 
     var initialsBtn = document.createElement("button");
     initialsBtn.id = "initSubmit";
     initialsBtn.innerText = "Submit";
-    initialsBtn.addEventListener("click",highScore);
     quizDisplay.appendChild(initialsBtn);
+    initialsBtn.addEventListener("click",highScore);
 }
 
 var highScore = function () {
-    console.log("Button was clicked");
-    //initialsBtn.remove();
+    if (document.getElementById("player") !== null) {
+        var quiz__Time = document.getElementById("quiz__timer");
+        var playerDisplay = document.getElementById("inith3");
+        window.currentPLayer = document.getElementById("player").value;
+        if (currentPLayer !== ""){
+            playerDisplay.innerText = currentPLayer + " - " + playerScore;
+            document.getElementById("player").remove();
+            document.getElementById("initSubmit").remove();
+            document.getElementById("inith3");
+            pdisplay.remove();
+            console.log("Button was clicked");
+            quiz__Time.innerText = "Time";
+
+            gdisplayh2.innerHTML = "High Score";
+
+            var newQizBtn = document.createElement("button");
+            newQizBtn.id = "newQuiz";
+            newQizBtn.innerText = "Restart";
+            newQizBtn.addEventListener("click",startQuiz);
+            quizDisplay.appendChild(newQizBtn);
+        
+            var clearBtn = document.createElement("button");
+            clearBtn.id = "newQuiz";
+            clearBtn.innerText = "Clear high score";
+            clearBtn.addEventListener("click",clearScore);
+            quizDisplay.appendChild(clearBtn);
+
+            // set high score
+            localStorage.setItem("name", currentPLayer);
+            localStorage.setItem("highScore", playerScore);
+
+            // reset view heigh score
+            highScoreDiv.addEventListener("click",highScore);
+        }else {
+            alert("Please enter you initials");
+             
+        }
+       
+    }
+    else{
+
+        if (localStorage.getItem("name") !== null) {
+            score.name = localStorage.getItem("name");
+            score.highScore = parseInt(localStorage.getItem("highScore"));
+            console.log(score);
+        }
+        // place h3
+        var initials = document.createElement("h3");
+        initials.id = "inith3";
+        initials.innerText = score.name + " - " + score.highScore;
+        quizDisplay.appendChild(initials);
+
+        //
+        gdisplayh2.innerHTML = "High Score";
+
+        //remove intro paragraph
+        pdisplay.remove();
+        // hide start button
+        quizButton.remove();
+
+        var newQizBtn = document.createElement("button");
+        newQizBtn.id = "newQuiz";
+        newQizBtn.innerText = "Restart";
+        newQizBtn.addEventListener("click",startQuiz);
+        quizDisplay.appendChild(newQizBtn);
+    
+        var clearBtn = document.createElement("button");
+        clearBtn.id = "newQuiz";
+        clearBtn.innerText = "Clear high score";
+        clearBtn.addEventListener("click",clearScore);
+        quizDisplay.appendChild(clearBtn);
+
+        // reset view heigh score
+        highScoreDiv.addEventListener("click",highScore);
+        
+    }
+   
+    
+}
+// view high score
+var viewHighScore = function () {
+
+}
+
+// clear local storage
+var clearScore = function () {
+    localStorage.clear();
+    var newDisplay = document.getElementById("inith3");
+    window.score.name = "David";
+    window.score.highScore = 120;
+    newDisplay.innerText = score.name + " - " + score.highScore;
 }
 
 // end game screen
@@ -332,7 +436,6 @@ var endQuiz = function(elemet){
     var timeUP = "All done!";
     var inTime = "Congratulations!";
     var quiz__Time = document.getElementById("quiz__timer");
-
     // set end quiz status
     window.quizEnd = true;
     if(elemet=== "Nice!"){
@@ -349,11 +452,10 @@ var endQuiz = function(elemet){
     submit();
 }
 
-
 function incrementPoints(){
     window.playerScore += 25;
     var scoreHud = document.getElementById("scoreHud")
-    scoreHud.innerHTML ="Score:" + playerScore;
+    scoreHud.innerHTML ="Score:" + " " + playerScore;
 }
 
 function decrementPoints(){
@@ -364,7 +466,7 @@ function decrementPoints(){
     else{
         window.playerScore -= 5;
         var scoreHud = document.getElementById("scoreHud")
-        scoreHud.innerHTML ="Score:" + playerScore;
+        scoreHud.innerHTML ="Score:" + " " + playerScore;
     }
    
 }
@@ -380,8 +482,5 @@ function decrementPoints(){
     
 //}
 //console.log( questionList);
-
+highScoreDiv.addEventListener("click",highScore);
 quizButton.addEventListener("click", startQuiz);
-
-// get buttons to check answer
-
